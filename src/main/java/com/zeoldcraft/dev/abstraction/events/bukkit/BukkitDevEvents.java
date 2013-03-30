@@ -3,9 +3,15 @@ package com.zeoldcraft.dev.abstraction.events.bukkit;
 import java.net.InetAddress;
 import java.util.Collection;
 
+import org.bukkit.event.entity.EntityPortalEnterEvent;
 import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 
+import com.laytonsmith.abstraction.MCEntity;
+import com.laytonsmith.abstraction.MCLocation;
+import com.laytonsmith.abstraction.bukkit.BukkitMCEntity;
+import com.laytonsmith.abstraction.bukkit.BukkitMCLocation;
+import com.zeoldcraft.dev.abstraction.events.MCPortalEnterEvent;
 import com.zeoldcraft.dev.abstraction.events.MCPingEvent;
 import com.zeoldcraft.dev.abstraction.events.MCTabCompleteEvent;
 
@@ -69,6 +75,26 @@ public class BukkitDevEvents {
 
 		public Collection<String> getTabCompletions() {
 			return tc.getTabCompletions();
+		}
+	}
+	
+	public static class BukkitMCPortalEnterEvent implements MCPortalEnterEvent {
+
+		EntityPortalEnterEvent epe;
+		public BukkitMCPortalEnterEvent(EntityPortalEnterEvent event) {
+			epe = event;
+		}
+		
+		public Object _GetObject() {
+			return epe;
+		}
+
+		public MCEntity getEntity() {
+			return new BukkitMCEntity(epe.getEntity());
+		}
+
+		public MCLocation getLocation() {
+			return new BukkitMCLocation(epe.getLocation());
 		}
 	}
 }
