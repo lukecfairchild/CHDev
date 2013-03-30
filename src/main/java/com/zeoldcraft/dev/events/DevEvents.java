@@ -3,6 +3,7 @@ package com.zeoldcraft.dev.events;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.laytonsmith.abstraction.MCEntity;
 import com.laytonsmith.annotations.api;
 import com.laytonsmith.core.ObjectGenerator;
 import com.laytonsmith.core.Static;
@@ -11,8 +12,11 @@ import com.laytonsmith.core.events.BindableEvent;
 import com.laytonsmith.core.exceptions.ConfigRuntimeException;
 import com.laytonsmith.core.exceptions.EventException;
 import com.laytonsmith.core.exceptions.PrefilterNonMatchException;
+import com.laytonsmith.core.functions.Exceptions;
 import com.zeoldcraft.dev.CHDev.DevEvent;
+import com.zeoldcraft.dev.abstraction.enums.bukkit.BukkitMCFishingState;
 import com.zeoldcraft.dev.abstraction.events.MCPingEvent;
+import com.zeoldcraft.dev.abstraction.events.MCPlayerFishEvent;
 import com.zeoldcraft.dev.abstraction.events.MCPortalEnterEvent;
 import com.zeoldcraft.dev.abstraction.events.MCTabCompleteEvent;
 
@@ -104,7 +108,7 @@ public class DevEvents {
 			if (e instanceof MCTabCompleteEvent) {
 				MCTabCompleteEvent event = (MCTabCompleteEvent) e;
 				Target t = Target.UNKNOWN;
-				Map<String, Construct> ret = new HashMap<String, Construct>();
+				Map<String, Construct> ret = evaluate_helper(event);
 				ret.put("message", new CString(event.getChatMessage(), t));
 				ret.put("last", new CString(event.getLastToken(), t));
 				CArray completions = new CArray(t);
@@ -168,6 +172,66 @@ public class DevEvents {
 
 		public boolean modifyEvent(String key, Construct value,
 				BindableEvent event) {
+			return false;
+		}
+	}
+	
+	@api
+	public static class player_fish extends DevEvent {
+
+		public String getName() {
+			return "player_fish";
+		}
+
+		public String docs() {
+			// TODO Auto-generated method stub
+			return "";
+		}
+
+		public boolean matches(Map<String, Construct> prefilter, BindableEvent e)
+				throws PrefilterNonMatchException {
+			if (e instanceof MCPlayerFishEvent) {
+				return true;
+			}
+			return false;
+		}
+
+		public BindableEvent convert(CArray manualObject) {
+			throw new ConfigRuntimeException("Unsupported Operation", Target.UNKNOWN);
+		}
+
+		public Map<String, Construct> evaluate(BindableEvent e)
+				throws EventException {
+			if (e instanceof MCPlayerFishEvent) {
+				MCPlayerFishEvent event = (MCPlayerFishEvent) e;
+				Target t = Target.UNKNOWN;
+				Map<String, Construct> ret = evaluate_helper(event);
+				ret.put("state", new CString(event.getState().name(), t));
+				ret.put("hook", new CInt(event.getHook().getEntityId(), t));
+				ret.put("xp", new CInt(event.getExpToDrop(), t));
+				Construct caught = new CNull(t);
+				if (event.getCaught() instanceof MCEntity) {
+					caught = new CInt(event.getCaught().getEntityId(), t);
+				}
+				ret.put("caught", caught);
+				ret.put("chance", new CInt(((int) event.getHook().getBiteChance() * 100), t));
+				return ret;
+			} else {
+				throw new EventException("Could not convert to MCPlayerFishEvent");
+			}
+		}
+
+		public boolean modifyEvent(String key, Construct value,
+				BindableEvent event) {
+			if (event instanceof MCPlayerFishEvent) {
+				if (key.equals("chance")) {
+					int chance = Static.getInt32(value, Target.UNKNOWN);
+					if (chance > 100 || chance < 0) {
+						throw new Exceptions.FormatException("Chance must be between 0 and 100.", Target.UNKNOWN);
+					}
+					((MCPlayerFishEvent) event).getHook().setBiteChance(((double) chance)/100.0);
+				}
+			}
 			return false;
 		}
 	}

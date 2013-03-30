@@ -5,12 +5,18 @@ import java.util.Collection;
 
 import org.bukkit.event.entity.EntityPortalEnterEvent;
 import org.bukkit.event.player.PlayerChatTabCompleteEvent;
+import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 
 import com.laytonsmith.abstraction.MCEntity;
 import com.laytonsmith.abstraction.MCLocation;
 import com.laytonsmith.abstraction.bukkit.BukkitMCEntity;
 import com.laytonsmith.abstraction.bukkit.BukkitMCLocation;
+import com.zeoldcraft.dev.abstraction.MCFishHook;
+import com.zeoldcraft.dev.abstraction.bukkit.BukkitMCFishHook;
+import com.zeoldcraft.dev.abstraction.enums.MCFishingState;
+import com.zeoldcraft.dev.abstraction.enums.bukkit.BukkitMCFishingState;
+import com.zeoldcraft.dev.abstraction.events.MCPlayerFishEvent;
 import com.zeoldcraft.dev.abstraction.events.MCPortalEnterEvent;
 import com.zeoldcraft.dev.abstraction.events.MCPingEvent;
 import com.zeoldcraft.dev.abstraction.events.MCTabCompleteEvent;
@@ -95,6 +101,41 @@ public class BukkitDevEvents {
 
 		public MCLocation getLocation() {
 			return new BukkitMCLocation(epe.getLocation());
+		}
+	}
+	
+	public static class BukkitMCPlayerFishEvent implements MCPlayerFishEvent {
+
+		PlayerFishEvent e;
+		public BukkitMCPlayerFishEvent(PlayerFishEvent event) {
+			e = event;
+		}
+		
+		public Object _GetObject() {
+			return e;
+		}
+
+		public MCEntity getCaught() {
+			if (e.getCaught() == null) {
+				return null;
+			}
+			return new BukkitMCEntity(e.getCaught());
+		}
+
+		public int getExpToDrop() {
+			return e.getExpToDrop();
+		}
+
+		public MCFishHook getHook() {
+			return new BukkitMCFishHook(e.getHook());
+		}
+
+		public MCFishingState getState() {
+			return BukkitMCFishingState.getConvertor().getAbstractedEnum(e.getState());
+		}
+
+		public void setExpToDrop(int exp) {
+			e.setExpToDrop(exp);
 		}
 	}
 }

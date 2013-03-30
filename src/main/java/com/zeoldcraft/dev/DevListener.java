@@ -4,6 +4,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPortalEnterEvent;
 import org.bukkit.event.player.PlayerChatTabCompleteEvent;
+import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 
 import com.laytonsmith.commandhelper.CommandHelperPlugin;
@@ -21,6 +22,7 @@ public class DevListener implements Listener {
 		ServerListPingEvent.getHandlerList().unregister(this);
 		PlayerChatTabCompleteEvent.getHandlerList().unregister(this);
 		EntityPortalEnterEvent.getHandlerList().unregister(this);
+		PlayerFishEvent.getHandlerList().unregister(this);
 	}
 	
 	@EventHandler
@@ -39,5 +41,11 @@ public class DevListener implements Listener {
 	public void onPortalEnter(EntityPortalEnterEvent event) {
 		BukkitDevEvents.BukkitMCPortalEnterEvent e = new BukkitDevEvents.BukkitMCPortalEnterEvent(event);
 		EventUtils.TriggerListener(Driver.EXTENSION, "portal_enter", e);
+	}
+	
+	@EventHandler
+	public void onFish(PlayerFishEvent event) {
+		BukkitDevEvents.BukkitMCPlayerFishEvent e = new BukkitDevEvents.BukkitMCPlayerFishEvent(event);
+		EventUtils.TriggerListener(Driver.EXTENSION, "player_fish", e);
 	}
 }
