@@ -8,7 +8,7 @@ import org.bukkit.event.server.ServerListPingEvent;
 
 import com.laytonsmith.commandhelper.CommandHelperPlugin;
 import com.laytonsmith.core.events.EventUtils;
-import com.zeoldcraft.dev.abstraction.events.bukkit.BukkitDevEvents.*;
+import com.zeoldcraft.dev.abstraction.events.bukkit.BukkitDevEvents;
 
 public class DevListener implements Listener {
 
@@ -23,19 +23,19 @@ public class DevListener implements Listener {
 	
 	@EventHandler
 	public void onPing(ServerListPingEvent event) {
-		BukkitMCPingEvent e = new BukkitMCPingEvent(event);
+		BukkitDevEvents.BukkitMCPingEvent e = new BukkitDevEvents.BukkitMCPingEvent(event);
 		EventUtils.TriggerExternal(e);
 	}
 	
 	@EventHandler
 	public void onTab(PlayerChatTabCompleteEvent event) {
-		BukkitMCTabCompleteEvent e = new BukkitMCTabCompleteEvent(event);
+		BukkitDevEvents.BukkitMCTabCompleteEvent e = new BukkitDevEvents.BukkitMCTabCompleteEvent(event);
 		EventUtils.TriggerExternal(e);
 	}
 	
 	@EventHandler
 	public void onPortalEnter(EntityPortalEnterEvent event) {
-		BukkitMCPortalEnterEvent e = new BukkitMCPortalEnterEvent(event);
+		BukkitDevEvents.BukkitMCPortalEnterEvent e = new BukkitDevEvents.BukkitMCPortalEnterEvent(event);
 		EventUtils.TriggerExternal(e);
 	}
 }
