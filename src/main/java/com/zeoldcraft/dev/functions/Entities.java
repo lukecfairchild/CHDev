@@ -3,6 +3,7 @@ package com.zeoldcraft.dev.functions;
 import com.laytonsmith.abstraction.*;
 import com.laytonsmith.abstraction.blocks.MCBlockFace;
 import com.laytonsmith.abstraction.blocks.MCFallingBlock;
+import com.laytonsmith.abstraction.entities.MCEnderman;
 import com.laytonsmith.abstraction.entities.MCOcelot;
 import com.laytonsmith.abstraction.entities.MCWolf;
 import com.laytonsmith.abstraction.enums.MCDyeColor;
@@ -16,7 +17,6 @@ import com.laytonsmith.core.exceptions.ConfigRuntimeException;
 import com.laytonsmith.core.functions.Exceptions;
 import com.laytonsmith.core.functions.Exceptions.ExceptionType;
 import com.zeoldcraft.dev.CHDev.DevFunction;
-import com.zeoldcraft.dev.abstraction.MCEnderman;
 
 public class Entities {
 	
@@ -33,7 +33,7 @@ public class Entities {
 
 		public Construct exec(Target t, Environment environment,
 				Construct... args) throws ConfigRuntimeException {
-			MCLivingEntity ent = Static.getLivingEntity(Static.getInt32(args[0], t), t);
+			MCEntity ent = Static.getEntity(Static.getInt32(args[0], t), t);
 			CArray ret = new CArray(t);
 			if (ent instanceof MCItem) {
 				ret.set("itemstack", ObjectGenerator.GetGenerator().item(((MCItem) ent).getItemStack(), t), t);
@@ -95,12 +95,12 @@ public class Entities {
 
 		public ExceptionType[] thrown() {
 			// TODO Auto-generated method stub
-			return null;
+			return new ExceptionType[]{ExceptionType.CastException, ExceptionType.BadEntityException};
 		}
 
 		public Construct exec(Target t, Environment environment,
 				Construct... args) throws ConfigRuntimeException {
-			MCLivingEntity ent = Static.getLivingEntity(Static.getInt32(args[0], t), t);
+			MCEntity ent = Static.getEntity(Static.getInt32(args[0], t), t);
 			if (!(args[1] instanceof CArray)) {
 				throw new Exceptions.FormatException("Arg 2 was expected to be an array", t);
 			}
