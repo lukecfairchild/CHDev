@@ -4,6 +4,7 @@ import java.util.Set;
 
 import com.laytonsmith.PureUtilities.StringUtils;
 import com.laytonsmith.abstraction.MCObjective;
+import com.laytonsmith.abstraction.MCOfflinePlayer;
 import com.laytonsmith.abstraction.MCScoreboard;
 import com.laytonsmith.abstraction.MCServer;
 import com.laytonsmith.abstraction.MCTeam;
@@ -61,7 +62,17 @@ public class Scoreboards {
 			}
 			CArray ret = new CArray(t);
 			for (MCObjective o : os) {
-				ret.push(new CString(o.getName(), t));
+				CArray obj = CArray.GetAssociativeArray(t);
+				obj.set("name", new CString(o.getName(), t), t);
+				obj.set("displayName", new CString(o.getDisplayName(), t), t);
+				Construct slot = new CNull(t);
+				if (o.getDisplaySlot() != null) {
+					slot = new CString(o.getDisplaySlot().name(), t);
+				}
+				obj.set("slot", slot, t);
+				obj.set("modifiable", new CBoolean(o.isModifiable(), t), t);
+				obj.set("criteria", new CString(o.getCriteria(), t), t);
+				ret.push(obj);
 			}
 			return ret;
 		}
@@ -75,8 +86,9 @@ public class Scoreboards {
 		}
 
 		public String docs() {
-			return "array {} Returns an array of the names of objectives in the current scoreboard."
-					+ " If criteria is given, only objectives with that criteria will be returned.";
+			return "array {} Returns an array of arrays about the objectives in the current scoreboard."
+					+ " If criteria is given, only objectives with that criteria will be returned."
+					+ " The arrays contain the keys name, displayname, slot, modifiable, and criteria.";
 		}
 	}
 	
@@ -92,7 +104,18 @@ public class Scoreboards {
 			Set<MCTeam> ts = Static.getServer().getMainScoreboard().getTeams();
 			CArray ret = new CArray(t);
 			for (MCTeam team : ts) {
-				ret.push(new CString(team.getName(), t));
+				CArray to = CArray.GetAssociativeArray(t);
+				to.set("name", new CString(team.getName(), t), t);
+				to.set("displayname", new CString(team.getDisplayName(), t), t);
+				to.set("prefix", new CString(team.getPrefix(), t), t);
+				to.set("suffix", new CString(team.getSuffix(), t), t);
+				to.set("size", new CInt(team.getSize(), t), t);
+				CArray pl = new CArray(t);
+				for (MCOfflinePlayer ofp : team.getPlayers()) {
+					pl.push(new CString(ofp.getName(), t));
+				}
+				to.set("players", pl, t);
+				ret.push(to);
 			}
 			return ret;
 		}
@@ -106,7 +129,8 @@ public class Scoreboards {
 		}
 
 		public String docs() {
-			return "array {} Returns an array of the team names on the current scoreboard.";
+			return "array {} Returns an array of arrays about the teams on the current scoreboard."
+					+ " The arrays contain the keys name, displayname, prefix, suffix, size, and players.";
 		}
 	}
 	
@@ -121,10 +145,11 @@ public class Scoreboards {
 				Construct... args) throws ConfigRuntimeException {
 			MCScoreboard s = Static.getServer().getMainScoreboard();
 			String name = args[0].val();
+			String criteria = args[1].val();
 			if (s.getObjective(name) != null) {
 				return new CBoolean(false, t);
 			}
-			s.registerNewObjective(name, args[1].val());
+			s.registerNewObjective(name, criteria);
 			return new CBoolean(true, t);
 		}
 
@@ -250,7 +275,40 @@ public class Scoreboards {
 		public String docs() {
 			return "void {teamname, player} Adds a player to a team, given the team exists."
 					+ " Offline players can be added, so the name must be exact."
-					+ " The player will be removed from any team they are already on.";
+					+ " The player will be removed from any other team on the same scoreboard.";
+		}
+	}
+	
+	@api
+	public static class remove_objective extends SBFunction {
+
+		public ExceptionType[] thrown() {
+			return new ExceptionType[]{ExceptionType.NullPointerException, ExceptionType.FormatException};
+		}
+
+		public Construct exec(Target t, Environment environment,
+				Construct... args) throws ConfigRuntimeException {
+			MCObjective o = Static.getServer().getMainScoreboard().getObjective(args[0].val());
+			try {
+				o.unregister();
+			} catch (NullPointerException npe) {
+				throw new ConfigRuntimeException("The objective does not exist.", ExceptionType.NullPointerException, t);
+			} catch (IllegalStateException ise) {
+				throw new Exceptions.FormatException("The objective has already been unregistered.", t);
+			}
+			return new CVoid(t);
+		}
+
+		public String getName() {
+			return "remove_objective";
+		}
+
+		public Integer[] numArgs() {
+			return new Integer[]{1};
+		}
+
+		public String docs() {
+			return "void {objectivename} Unregisters an objective from the scoreboard.";
 		}
 	}
 }
