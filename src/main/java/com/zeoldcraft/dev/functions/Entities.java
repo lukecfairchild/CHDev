@@ -53,6 +53,9 @@ public class Entities {
 			if (ent instanceof MCTNT) {
 				
 			}
+			if (ent instanceof MCFireball) {
+				ret.set("direction", ObjectGenerator.GetGenerator().velocity(((MCFireball) ent).getDirection(), t), t);
+			}
 			if (ent instanceof MCProjectile) {
 				ret.set("shooter", new CInt(((MCProjectile) ent).getShooter().getEntityId(), t), t);
 				ret.set("bounce", new CBoolean(((MCProjectile) ent).doesBounce(), t), t);
@@ -120,6 +123,9 @@ public class Entities {
 			}
 			if (ent instanceof MCTNT) {
 				
+			}
+			if (ent instanceof MCFireball) {
+				((MCFireball) ent).setDirection(ObjectGenerator.GetGenerator().velocity(ca.get("direction", t), t));
 			}
 			if (ent instanceof MCProjectile) {
 				((MCProjectile) ent).setShooter(Static.getLivingEntity(Static.getInt32(ca.get("shooter", t), t), t));
