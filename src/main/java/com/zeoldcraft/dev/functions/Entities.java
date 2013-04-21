@@ -1,6 +1,9 @@
 package com.zeoldcraft.dev.functions;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -223,6 +226,19 @@ public class Entities {
 		}
 	}
 	
+	private static Map<String,List<String>> funcs = new HashMap<String,List<String>>();
+	
+	static {
+		for (FunctionBase f : FunctionList.getFunctionList(api.Platforms.INTERPRETER_JAVA)) {
+			String clazz = f.getClass().getEnclosingClass().getName();
+			if (funcs.containsKey(clazz)) {
+				funcs.get(clazz).add(f.getName());
+			} else {
+				funcs.put(clazz, new ArrayList<String>()).add(f.getName());
+			}
+		}
+	}
+	
 	@api
 	public static class get_functions extends DevFunction {
 
@@ -232,10 +248,13 @@ public class Entities {
 
 		public Construct exec(Target t, Environment environment,
 				Construct... args) throws ConfigRuntimeException {
-			List<FunctionBase> flist = FunctionList.getFunctionList(api.Platforms.INTERPRETER_JAVA);
-			CArray ret = new CArray(t);
-			for (FunctionBase f : flist) {
-				ret.push(new CString(f.getName(), t));
+			CArray ret = CArray.GetAssociativeArray(t);
+			for (String cname : funcs.keySet()) {
+				CArray fnames = new CArray(t);
+				for (String fname : funcs.get(cname)) {
+					fnames.push(new CString(fname, t));
+				}
+				ret.set(new CString(cname, t), fnames, t);
 			}
 			return ret;
 		}
@@ -249,7 +268,9 @@ public class Entities {
 		}
 
 		public String docs() {
-			return "array {} Should return a list of all functions, including ones from extensions.";
+			return "array {} Returns an associative array of all loaded functions. The keys of this array are the"
+					+ " names of the classes containing the functions (which you know as the sections of the API page),"
+					+ " and the values are arrays of the names of the functions within those classes.";
 		}
 	}
 }
