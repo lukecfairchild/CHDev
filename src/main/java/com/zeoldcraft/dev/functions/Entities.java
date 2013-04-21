@@ -1,10 +1,16 @@
 package com.zeoldcraft.dev.functions;
 
+import java.util.List;
+
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+
 import com.laytonsmith.abstraction.*;
 import com.laytonsmith.abstraction.blocks.MCBlockFace;
 import com.laytonsmith.abstraction.blocks.MCFallingBlock;
 import com.laytonsmith.abstraction.entities.MCEnderman;
 import com.laytonsmith.abstraction.entities.MCOcelot;
+import com.laytonsmith.abstraction.entities.MCSheep;
 import com.laytonsmith.abstraction.entities.MCWolf;
 import com.laytonsmith.abstraction.enums.MCDyeColor;
 import com.laytonsmith.abstraction.enums.MCOcelotType;
@@ -16,6 +22,9 @@ import com.laytonsmith.core.environments.Environment;
 import com.laytonsmith.core.exceptions.ConfigRuntimeException;
 import com.laytonsmith.core.functions.Exceptions;
 import com.laytonsmith.core.functions.Exceptions.ExceptionType;
+import com.laytonsmith.core.functions.FunctionBase;
+import com.laytonsmith.core.functions.FunctionList;
+import com.sk89q.worldguard.protection.flags.WGBukkit;
 import com.zeoldcraft.dev.CHDev.DevFunction;
 
 public class Entities {
@@ -76,6 +85,9 @@ public class Entities {
 				ret.set("type", new CInt(((MCEnderman) ent).getCarriedType(), t), t);
 				ret.set("data", new CInt(((MCEnderman) ent).getCarriedData(), t), t);
 			}
+			if (ent instanceof MCSheep) {
+				ret.set("color", new CString(((MCSheep) ent).getColor().name(), t), t);
+			}
 			return ret;
 		}
 
@@ -88,8 +100,7 @@ public class Entities {
 		}
 
 		public String docs() {
-			// TODO Auto-generated method stub
-			return null;
+			return "specsArray {entityID} Returns an array of information specific to this entitytype.";
 		}
 	}
 	
@@ -159,6 +170,13 @@ public class Entities {
 				((MCEnderman) ent).setCarriedMaterial(Static.getInt32(ca.get("type", t), t), 
 						Static.getInt8(ca.get("data", t), t));
 			}
+			if (ent instanceof MCSheep) {
+				try {
+					((MCSheep) ent).setColor(MCDyeColor.valueOf(ca.get("color", t).val()));
+				} catch (IllegalArgumentException iae) {
+					throw new Exceptions.FormatException("Not a valid color.", t);
+				}
+			}
 			return new CVoid(t);
 		}
 
@@ -171,9 +189,67 @@ public class Entities {
 		}
 
 		public String docs() {
-			// TODO Auto-generated method stub
-			return null;
+			return "void {entityID, specsArray} Sets properties on an entity. Nothing is optional atm.";
 		}
-		
+	}
+	
+	@api
+	public static class sk_can_build extends DevFunction {
+
+		public ExceptionType[] thrown() {
+			return new ExceptionType[]{ExceptionType.InvalidPluginException, ExceptionType.PlayerOfflineException,
+					ExceptionType.FormatException, ExceptionType.InvalidWorldException};
+		}
+
+		public Construct exec(Target t, Environment environment,
+				Construct... args) throws ConfigRuntimeException {
+			Static.checkPlugin("WorldGuard", t);
+			MCPlayer p = Static.GetPlayer(args[0], t);
+			MCLocation loc = ObjectGenerator.GetGenerator().location(args[1], p.getWorld(), t);
+			return new CBoolean(WGBukkit.getPlugin().canBuild((Player) p.getHandle(), (Location) loc.getHandle()), t);
+		}
+
+		public String getName() {
+			return "sk_can_build";
+		}
+
+		public Integer[] numArgs() {
+			return new Integer[]{2};
+		}
+
+		public String docs() {
+			return "boolean {player, locationArray} Returns whether or not player can build at the location,"
+					+ " according to WorldGuard.";
+		}
+	}
+	
+	@api
+	public static class get_functions extends DevFunction {
+
+		public ExceptionType[] thrown() {
+			return new ExceptionType[]{};
+		}
+
+		public Construct exec(Target t, Environment environment,
+				Construct... args) throws ConfigRuntimeException {
+			List<FunctionBase> flist = FunctionList.getFunctionList(api.Platforms.INTERPRETER_JAVA);
+			CArray ret = new CArray(t);
+			for (FunctionBase f : flist) {
+				ret.push(new CString(f.getName(), t));
+			}
+			return ret;
+		}
+
+		public String getName() {
+			return "get_functions";
+		}
+
+		public Integer[] numArgs() {
+			return new Integer[]{0};
+		}
+
+		public String docs() {
+			return "array {} Should return a list of all functions, including ones from extensions.";
+		}
 	}
 }

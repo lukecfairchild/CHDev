@@ -52,4 +52,24 @@ public class CHDev implements Listener {
 			return Driver.EXTENSION;
 		}
 	}
+	
+	/*
+    public static List<Location> circle (Player player, Location loc, Integer r, Integer h, Boolean hollow, Boolean sphere, int plus_y) {
+        List<Location> circleblocks = new ArrayList<Location>();
+        int cx = loc.getBlockX();
+        int cy = loc.getBlockY();
+        int cz = loc.getBlockZ();
+        for (int x = cx - r; x <= cx +r; x++)
+            for (int z = cz - r; z <= cz +r; z++)
+                for (int y = (sphere ? cy - r : cy); y < (sphere ? cy + r : cy + h); y++) {
+                    double dist = (cx - x) * (cx - x) + (cz - z) * (cz - z) + (sphere ? (cy - y) * (cy - y) : 0);
+                    if (dist < r*r && !(hollow && dist < (r-1)*(r-1))) {
+                        Location l = new Location(loc.getWorld(), x, y + plus_y, z);
+                        circleblocks.add(l);
+                        }
+                    }
+     
+        return circleblocks;
+    }
+    */
 }
