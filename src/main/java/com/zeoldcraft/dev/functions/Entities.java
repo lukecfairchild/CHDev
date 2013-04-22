@@ -228,14 +228,14 @@ public class Entities {
 	
 	private static Map<String,List<String>> funcs = new HashMap<String,List<String>>();
 	
-	static {
+	private static void initf() {
 		for (FunctionBase f : FunctionList.getFunctionList(api.Platforms.INTERPRETER_JAVA)) {
-			String clazz = f.getClass().getEnclosingClass().getName();
-			if (funcs.containsKey(clazz)) {
-				funcs.get(clazz).add(f.getName());
-			} else {
-				funcs.put(clazz, new ArrayList<String>()).add(f.getName());
+			String[] pack = f.getClass().getEnclosingClass().getName().split("\\.");
+			String clazz = pack[pack.length - 1];
+			if (!funcs.containsKey(clazz)) {
+				funcs.put(clazz, new ArrayList<String>());
 			}
+			funcs.get(clazz).add(f.getName());
 		}
 	}
 	
@@ -249,6 +249,9 @@ public class Entities {
 		public Construct exec(Target t, Environment environment,
 				Construct... args) throws ConfigRuntimeException {
 			CArray ret = CArray.GetAssociativeArray(t);
+			if (funcs.keySet().size() < 10) {
+				initf();
+			}
 			for (String cname : funcs.keySet()) {
 				CArray fnames = new CArray(t);
 				for (String fname : funcs.get(cname)) {
