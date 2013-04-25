@@ -17,7 +17,7 @@ import com.laytonsmith.core.constructs.Target;
 import com.laytonsmith.core.environments.Environment;
 import com.laytonsmith.core.exceptions.ConfigRuntimeException;
 import com.laytonsmith.core.functions.Exceptions.ExceptionType;
-import com.zeoldcraft.dev.CHDev.DevFunction;
+import com.zeoldcraft.dev.CHDev.DFun;
 import com.zeoldcraft.dev.DataType;
 
 /**
@@ -30,7 +30,7 @@ public class MetaData {
 		return "Functions for using metadata on entities and blocks.";
 	}
 	
-	public static class has_metadata extends DevFunction {
+	public static class has_metadata extends DFun {
 
 		public ExceptionType[] thrown() {
 			return new ExceptionType[]{ExceptionType.CastException, ExceptionType.BadEntityException,
@@ -62,7 +62,7 @@ public class MetaData {
 		
 	}
 	
-	public static class get_metadata extends DevFunction {
+	public static class get_metadata extends DFun {
 
 		public ExceptionType[] thrown() {
 			return new ExceptionType[]{ExceptionType.PluginInternalException, ExceptionType.CastException,

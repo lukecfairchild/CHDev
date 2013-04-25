@@ -27,7 +27,7 @@ public class CHDev implements Listener {
 		dl.unregister();
 	}
 	
-	public static abstract class DevFunction extends AbstractFunction {
+	public static abstract class DFun extends AbstractFunction {
 
 		public boolean isRestricted() {
 			return true;

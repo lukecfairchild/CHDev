@@ -9,8 +9,11 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import com.laytonsmith.abstraction.*;
+import com.laytonsmith.abstraction.blocks.MCBlock;
 import com.laytonsmith.abstraction.blocks.MCBlockFace;
+import com.laytonsmith.abstraction.blocks.MCBlockState;
 import com.laytonsmith.abstraction.blocks.MCFallingBlock;
+import com.laytonsmith.abstraction.blocks.MCMaterial;
 import com.laytonsmith.abstraction.entities.MCEnderman;
 import com.laytonsmith.abstraction.entities.MCOcelot;
 import com.laytonsmith.abstraction.entities.MCSheep;
@@ -28,16 +31,17 @@ import com.laytonsmith.core.functions.Exceptions.ExceptionType;
 import com.laytonsmith.core.functions.FunctionBase;
 import com.laytonsmith.core.functions.FunctionList;
 import com.sk89q.worldguard.protection.flags.WGBukkit;
-import com.zeoldcraft.dev.CHDev.DevFunction;
+import com.zeoldcraft.dev.CHDev.DFun;
+import com.zeoldcraft.dev.abstraction.blocks.MCSkull;
 
-public class Entities {
+public class DevFunctions {
 	
 	public String docs() {
 		return "Function testing for EntityManagement class.";
 	}
 	
 	@api
-	public static class get_entity_spec extends DevFunction {
+	public static class get_entity_spec extends DFun {
 
 		public ExceptionType[] thrown() {
 			return new ExceptionType[]{ExceptionType.CastException, ExceptionType.BadEntityException};
@@ -108,7 +112,7 @@ public class Entities {
 	}
 	
 	@api
-	public static class set_entity_spec extends DevFunction {
+	public static class set_entity_spec extends DFun {
 
 		public ExceptionType[] thrown() {
 			// TODO Auto-generated method stub
@@ -197,7 +201,7 @@ public class Entities {
 	}
 	
 	@api
-	public static class sk_can_build extends DevFunction {
+	public static class sk_can_build extends DFun {
 
 		public ExceptionType[] thrown() {
 			return new ExceptionType[]{ExceptionType.InvalidPluginException, ExceptionType.PlayerOfflineException,
@@ -240,7 +244,7 @@ public class Entities {
 	}
 	
 	@api
-	public static class get_functions extends DevFunction {
+	public static class get_functions extends DFun {
 
 		public ExceptionType[] thrown() {
 			return new ExceptionType[]{};
@@ -274,6 +278,74 @@ public class Entities {
 			return "array {} Returns an associative array of all loaded functions. The keys of this array are the"
 					+ " names of the classes containing the functions (which you know as the sections of the API page),"
 					+ " and the values are arrays of the names of the functions within those classes.";
+		}
+	}
+	
+	@api
+	public static class material_info extends DFun {
+
+		public ExceptionType[] thrown() {
+			return new ExceptionType[]{ExceptionType.CastException, ExceptionType.FormatException};
+		}
+
+		public Construct exec(Target t, Environment environment, Construct... args) throws ConfigRuntimeException {
+			MCMaterial i = StaticLayer.GetConvertor().getMaterial(Static.getInt32(args[0], t));
+			CArray ret = new CArray(t);
+			ret.set("maxstacksize", new CInt(i.getMaxStackSize(), t), t);
+			ret.set("maxdurability", new CInt(i.getMaxDurability(), t), t);
+//			ret.set("hasgravity", new CBoolean(i.hasGravity(), t), t);
+//			ret.set("isblock", new CBoolean(i.isBlock(), t), t);
+//			ret.set("isburnable", new CBoolean(i.isBurnable(), t), t);
+//			ret.set("isedible", new CBoolean(i.isEdible(), t), t);
+//			ret.set("isflammable", new CBoolean(i.isFlammable(), t), t);
+//			ret.set("isoccluding", new CBoolean(i.isOccluding(), t), t);
+//			ret.set("isrecord", new CBoolean(i.isRecord(), t), t);
+//			ret.set("issolid", new CBoolean(i.isSolid(), t), t);
+//			ret.set("istransparent", new CBoolean(i.isTransparent(), t), t);
+			return ret;
+		}
+
+		public String getName() {
+			return "material_info";
+		}
+
+		public Integer[] numArgs() {
+			return new Integer[]{1};
+		}
+
+		public String docs() {
+			return "array {int} Returns an array of info about the material.";
+		}
+	}
+	
+	@api
+	public static class get_head_at extends DFun {
+
+		public ExceptionType[] thrown() {
+			return new ExceptionType[]{ExceptionType.FormatException, ExceptionType.CastException};
+		}
+
+		public Construct exec(Target t, Environment environment,
+				Construct... args) throws ConfigRuntimeException {
+			MCLocation loc = ObjectGenerator.GetGenerator().location(args[0], null, t);
+			MCBlockState bs = loc.getBlock().getState();
+			if (bs instanceof MCSkull) {
+				MCSkull sk = (MCSkull) bs;
+				return new CString(sk.getSkullType() + "|" + sk.getOwner() + "|" + sk.getRotation().name(), t);
+			}
+			return new CNull(t);
+		}
+
+		public String getName() {
+			return "get_head_at";
+		}
+
+		public Integer[] numArgs() {
+			return new Integer[]{1};
+		}
+
+		public String docs() {
+			return "string {locationArray} Returns skull data in the form 'skulltype|name|rotation'";
 		}
 	}
 }
