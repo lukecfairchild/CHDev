@@ -20,8 +20,8 @@ public class DevListener implements Listener {
 	}
 	
 	@EventHandler(priority= EventPriority.LOWEST)
-	public void onTab(PlayerChatTabCompleteEvent event) {
-		BukkitDevEvents.BukkitMCTabCompleteEvent e = new BukkitDevEvents.BukkitMCTabCompleteEvent(event);
-		EventUtils.TriggerListener(Driver.EXTENSION, "tab_complete", e);
+	public void onChatTab(PlayerChatTabCompleteEvent event) {
+		BukkitDevEvents.BukkitMCChatTabCompleteEvent e = new BukkitDevEvents.BukkitMCChatTabCompleteEvent(event);
+		EventUtils.TriggerListener(Driver.EXTENSION, "chat_tab_complete", e);
 	}
 }

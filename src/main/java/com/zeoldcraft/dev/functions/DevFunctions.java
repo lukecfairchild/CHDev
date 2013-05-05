@@ -5,15 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-
+import org.bukkit.Server;
+import org.bukkit.command.Command;
+import org.bukkit.command.SimpleCommandMap;
 import com.laytonsmith.abstraction.*;
-import com.laytonsmith.abstraction.blocks.MCBlock;
 import com.laytonsmith.abstraction.blocks.MCBlockFace;
 import com.laytonsmith.abstraction.blocks.MCBlockState;
 import com.laytonsmith.abstraction.blocks.MCFallingBlock;
 import com.laytonsmith.abstraction.blocks.MCMaterial;
+import com.laytonsmith.abstraction.bukkit.BukkitMCPlugin;
+import com.laytonsmith.abstraction.bukkit.BukkitMCServer;
 import com.laytonsmith.abstraction.entities.MCEnderman;
 import com.laytonsmith.abstraction.entities.MCOcelot;
 import com.laytonsmith.abstraction.entities.MCSheep;
@@ -30,9 +31,14 @@ import com.laytonsmith.core.functions.Exceptions;
 import com.laytonsmith.core.functions.Exceptions.ExceptionType;
 import com.laytonsmith.core.functions.FunctionBase;
 import com.laytonsmith.core.functions.FunctionList;
-import com.sk89q.worldguard.protection.flags.WGBukkit;
+import com.zeoldcraft.dev.CHDev;
 import com.zeoldcraft.dev.CHDev.DFun;
+import com.zeoldcraft.dev.abstraction.MCCommand;
+import com.zeoldcraft.dev.abstraction.MCCommandMap;
+import com.zeoldcraft.dev.abstraction.MCPluginCommand;
 import com.zeoldcraft.dev.abstraction.blocks.MCSkull;
+import com.zeoldcraft.dev.abstraction.bukkit.BukkitMCCommandMap;
+import com.zeoldcraft.dev.abstraction.bukkit.BukkitMCPluginCommand;
 
 public class DevFunctions {
 	
@@ -200,36 +206,6 @@ public class DevFunctions {
 		}
 	}
 	
-	@api
-	public static class sk_can_build extends DFun {
-
-		public ExceptionType[] thrown() {
-			return new ExceptionType[]{ExceptionType.InvalidPluginException, ExceptionType.PlayerOfflineException,
-					ExceptionType.FormatException, ExceptionType.InvalidWorldException};
-		}
-
-		public Construct exec(Target t, Environment environment,
-				Construct... args) throws ConfigRuntimeException {
-			Static.checkPlugin("WorldGuard", t);
-			MCPlayer p = Static.GetPlayer(args[0], t);
-			MCLocation loc = ObjectGenerator.GetGenerator().location(args[1], p.getWorld(), t);
-			return new CBoolean(WGBukkit.getPlugin().canBuild((Player) p.getHandle(), (Location) loc.getHandle()), t);
-		}
-
-		public String getName() {
-			return "sk_can_build";
-		}
-
-		public Integer[] numArgs() {
-			return new Integer[]{2};
-		}
-
-		public String docs() {
-			return "boolean {player, locationArray} Returns whether or not player can build at the location,"
-					+ " according to WorldGuard.";
-		}
-	}
-	
 	private static Map<String,List<String>> funcs = new HashMap<String,List<String>>();
 	
 	private static void initf() {
@@ -346,6 +322,202 @@ public class DevFunctions {
 
 		public String docs() {
 			return "string {locationArray} Returns skull data in the form 'skulltype|name|rotation'";
+		}
+	}
+	
+	@api
+	public static class get_commands extends DFun {
+
+		public ExceptionType[] thrown() {
+			return new ExceptionType[]{ExceptionType.PluginInternalException};
+		}
+
+		public Construct exec(Target t, Environment environment, Construct... args) throws ConfigRuntimeException {
+			Server s = ((BukkitMCServer) Static.getServer()).__Server();
+			SimpleCommandMap scm;
+			Object invokedMap;
+			try {
+				invokedMap = s.getClass().getMethod("getCommandMap").invoke(s);
+			} catch (Exception e) {
+				throw new ConfigRuntimeException(e.getMessage(), ExceptionType.PluginInternalException, t);
+			}
+			if (invokedMap instanceof SimpleCommandMap) {
+				scm = (SimpleCommandMap) invokedMap;
+				CArray ret = new CArray(t);
+				for (Command cmd : scm.getCommands()) {
+					CArray com = new CArray(t);
+					com.set("name", new CString(cmd.getName(), t), t);
+					Construct label;
+					if (cmd.getLabel() == null) {
+						label = new CNull(t);
+					} else {
+						label = new CString(cmd.getLabel(), t);
+					}
+					com.set("label", label, t);
+					com.set("description", new CString(cmd.getDescription(), t), t);
+					Construct permission;
+					if (cmd.getPermission() == null) {
+						permission = new CNull(t);
+					} else {
+						permission = new CString(cmd.getPermission(), t);
+					}
+					com.set("permission", permission, t);
+					com.set("nopermmsg", new CString(cmd.getPermissionMessage(), t), t);
+					com.set("usage", new CString(cmd.getUsage(), t), t);
+					CArray aliases = new CArray(t);
+					for (String a : cmd.getAliases()) {
+						aliases.push(new CString(a, t));
+					}
+					com.set("aliases", aliases, t);
+					ret.set(cmd.getLabel(), com, t);
+				}
+				return ret;
+			} else {
+				throw new ConfigRuntimeException("CommandMap not found", ExceptionType.PluginInternalException, t);
+			}
+		}
+
+		public String getName() {
+			return "get_commands";
+		}
+
+		public Integer[] numArgs() {
+			return new Integer[]{0};
+		}
+
+		public String docs() {
+			return "array {} Array of command keys with associative array values";
+		}
+	}
+	
+	@api
+	public static class register_command extends DFun {
+
+		public ExceptionType[] thrown() {
+			return new ExceptionType[]{ExceptionType.PluginInternalException};
+		}
+
+		public Construct exec(Target t, Environment environment, Construct... args) throws ConfigRuntimeException {
+			MCPluginCommand cmd;
+			try {
+				cmd = BukkitMCPluginCommand.newCommand(args[0].val());
+				cmd.setTabCompleter(new BukkitMCPlugin(CHDev.myself));
+			} catch (Exception e) {
+				throw new ConfigRuntimeException(e.getMessage(), ExceptionType.PluginInternalException, t);
+			}
+			if (args.length >= 2) {
+				cmd.setDescription(args[1].val());
+			}
+			if (args.length >= 3) {
+				cmd.setUsage(args[2].val());
+			}
+			if (args.length >= 4) {
+				cmd.setPermission(args[3].val());
+			}
+			if (args.length >= 5) {
+				cmd.setPermissionMessage(args[4].val());
+			}
+			if (args.length == 6) {
+				if (args[5] instanceof CArray) {
+					CArray aa = (CArray) args[5];
+					ArrayList<String> aliases = new ArrayList<String>();
+					for (String key : aa.keySet()) {
+						aliases.add(aa.get(key).val());
+					}
+					cmd.setAliases(aliases);
+				}
+			}
+			try {
+				return new CBoolean(new BukkitMCCommandMap().register("CommandHelper", cmd), t);
+			} catch (Exception e) {
+				throw new ConfigRuntimeException(e.getMessage(), ExceptionType.PluginInternalException, t);
+			}
+		}
+
+		public String getName() {
+			return "register_command";
+		}
+
+		public Integer[] numArgs() {
+			return new Integer[]{1, 2, 3, 4, 5, 6};
+		}
+
+		public String docs() {
+			return "boolean {name, [description], [usage], [permission], [nopermmsg], [aliases]}"
+					+ " Attempts to register a command, and returns true if succesful."
+					+ " If false, the prefix 'CommandHelper:' was added to the front of the command.";
+		}
+	}
+	
+	@api
+	public static class unregister_command extends DFun {
+
+		public ExceptionType[] thrown() {
+			return new ExceptionType[]{ExceptionType.PluginInternalException};
+		}
+
+		public Construct exec(Target t, Environment environment, Construct... args) throws ConfigRuntimeException {
+			try {
+				MCCommandMap map = new BukkitMCCommandMap();
+				MCCommand cmd = map.getCommand(args[0].val());
+				//This didn't do what I thought it would, will change later
+				return new CBoolean(cmd.unregister(map), t);
+			} catch (Exception e) {
+				throw new ConfigRuntimeException(e.getMessage(), ExceptionType.PluginInternalException, t);
+			}
+		}
+
+		public String getName() {
+			return "unregister_command";
+		}
+
+		public Integer[] numArgs() {
+			return new Integer[]{1};
+		}
+
+		public String docs() {
+			return "boolean {command} Attempts to unregister a command, returning true if successful.";
+		}
+	}
+	
+	@api
+	public static class claim_tabcompleter extends DFun {
+
+		public ExceptionType[] thrown() {
+			return new ExceptionType[]{ExceptionType.PluginInternalException, ExceptionType.NullPointerException,
+					ExceptionType.CastException};
+		}
+
+		public Construct exec(Target t, Environment environment,
+				Construct... args) throws ConfigRuntimeException {
+			try {
+				MCCommandMap map = new BukkitMCCommandMap();
+				MCCommand cmd = map.getCommand(args[0].val());
+				if (cmd == null) {
+					throw new ConfigRuntimeException("Command not found", ExceptionType.NullPointerException, t);
+				}
+				if (cmd.isPluginCommand()) {
+					cmd.asPluginCommand().setTabCompleter(new BukkitMCPlugin(CHDev.myself));
+				} else {
+					throw new ConfigRuntimeException("The given command was not plugin-assignable",
+							ExceptionType.CastException, t);
+				}
+			} catch (Exception e) {
+				throw new ConfigRuntimeException(e.getMessage(), ExceptionType.PluginInternalException, t);
+			}
+			return new CVoid(t);
+		}
+
+		public String getName() {
+			return "claim_tabcompleter";
+		}
+
+		public Integer[] numArgs() {
+			return new Integer[]{1};
+		}
+
+		public String docs() {
+			return "void {command} Makes CommandHelper the TabCompleter for this command";
 		}
 	}
 }
