@@ -1,11 +1,9 @@
 package com.zeoldcraft.dev.abstraction.bukkit;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.Plugin;
 
+import com.laytonsmith.PureUtilities.ReflectionUtils;
 import com.laytonsmith.abstraction.MCPlugin;
 import com.laytonsmith.abstraction.bukkit.BukkitMCPlugin;
 import com.laytonsmith.commandhelper.CommandHelperPlugin;
@@ -19,12 +17,9 @@ public class BukkitMCPluginCommand extends BukkitMCCommand implements MCPluginCo
 		this.pc = pcmd;
 	}
 	
-	public static MCPluginCommand newCommand(String name) throws NoSuchMethodException, SecurityException,
-			InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		Constructor<PluginCommand> pcc = PluginCommand.class.getDeclaredConstructor(String.class, Plugin.class);
-		pcc.setAccessible(true);
-		PluginCommand npc = pcc.newInstance(name, CommandHelperPlugin.self);
-		return new BukkitMCPluginCommand(npc);
+	public static MCPluginCommand newCommand(String name) {
+		return new BukkitMCPluginCommand(ReflectionUtils.newInstance(PluginCommand.class,
+				new Class[]{String.class, Plugin.class}, new Object[]{name, CommandHelperPlugin.self}));
 	}
 	
 	public MCPlugin getPlugin() {

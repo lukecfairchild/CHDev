@@ -1,10 +1,6 @@
 package com.zeoldcraft.dev.functions;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.SimpleCommandMap;
@@ -12,7 +8,6 @@ import com.laytonsmith.abstraction.*;
 import com.laytonsmith.abstraction.blocks.MCBlockFace;
 import com.laytonsmith.abstraction.blocks.MCBlockState;
 import com.laytonsmith.abstraction.blocks.MCFallingBlock;
-import com.laytonsmith.abstraction.blocks.MCMaterial;
 import com.laytonsmith.abstraction.bukkit.BukkitMCPlugin;
 import com.laytonsmith.abstraction.bukkit.BukkitMCServer;
 import com.laytonsmith.abstraction.entities.MCEnderman;
@@ -29,8 +24,6 @@ import com.laytonsmith.core.environments.Environment;
 import com.laytonsmith.core.exceptions.ConfigRuntimeException;
 import com.laytonsmith.core.functions.Exceptions;
 import com.laytonsmith.core.functions.Exceptions.ExceptionType;
-import com.laytonsmith.core.functions.FunctionBase;
-import com.laytonsmith.core.functions.FunctionList;
 import com.zeoldcraft.dev.CHDev;
 import com.zeoldcraft.dev.CHDev.DFun;
 import com.zeoldcraft.dev.abstraction.MCCommand;
@@ -203,94 +196,6 @@ public class DevFunctions {
 
 		public String docs() {
 			return "void {entityID, specsArray} Sets properties on an entity. Nothing is optional atm.";
-		}
-	}
-	
-	private static Map<String,List<String>> funcs = new HashMap<String,List<String>>();
-	
-	private static void initf() {
-		for (FunctionBase f : FunctionList.getFunctionList(api.Platforms.INTERPRETER_JAVA)) {
-			String[] pack = f.getClass().getEnclosingClass().getName().split("\\.");
-			String clazz = pack[pack.length - 1];
-			if (!funcs.containsKey(clazz)) {
-				funcs.put(clazz, new ArrayList<String>());
-			}
-			funcs.get(clazz).add(f.getName());
-		}
-	}
-	
-	@api
-	public static class get_functions extends DFun {
-
-		public ExceptionType[] thrown() {
-			return new ExceptionType[]{};
-		}
-
-		public Construct exec(Target t, Environment environment,
-				Construct... args) throws ConfigRuntimeException {
-			CArray ret = CArray.GetAssociativeArray(t);
-			if (funcs.keySet().size() < 10) {
-				initf();
-			}
-			for (String cname : funcs.keySet()) {
-				CArray fnames = new CArray(t);
-				for (String fname : funcs.get(cname)) {
-					fnames.push(new CString(fname, t));
-				}
-				ret.set(new CString(cname, t), fnames, t);
-			}
-			return ret;
-		}
-
-		public String getName() {
-			return "get_functions";
-		}
-
-		public Integer[] numArgs() {
-			return new Integer[]{0};
-		}
-
-		public String docs() {
-			return "array {} Returns an associative array of all loaded functions. The keys of this array are the"
-					+ " names of the classes containing the functions (which you know as the sections of the API page),"
-					+ " and the values are arrays of the names of the functions within those classes.";
-		}
-	}
-	
-	@api
-	public static class material_info extends DFun {
-
-		public ExceptionType[] thrown() {
-			return new ExceptionType[]{ExceptionType.CastException, ExceptionType.FormatException};
-		}
-
-		public Construct exec(Target t, Environment environment, Construct... args) throws ConfigRuntimeException {
-			MCMaterial i = StaticLayer.GetConvertor().getMaterial(Static.getInt32(args[0], t));
-			CArray ret = new CArray(t);
-			ret.set("maxstacksize", new CInt(i.getMaxStackSize(), t), t);
-			ret.set("maxdurability", new CInt(i.getMaxDurability(), t), t);
-//			ret.set("hasgravity", new CBoolean(i.hasGravity(), t), t);
-//			ret.set("isblock", new CBoolean(i.isBlock(), t), t);
-//			ret.set("isburnable", new CBoolean(i.isBurnable(), t), t);
-//			ret.set("isedible", new CBoolean(i.isEdible(), t), t);
-//			ret.set("isflammable", new CBoolean(i.isFlammable(), t), t);
-//			ret.set("isoccluding", new CBoolean(i.isOccluding(), t), t);
-//			ret.set("isrecord", new CBoolean(i.isRecord(), t), t);
-//			ret.set("issolid", new CBoolean(i.isSolid(), t), t);
-//			ret.set("istransparent", new CBoolean(i.isTransparent(), t), t);
-			return ret;
-		}
-
-		public String getName() {
-			return "material_info";
-		}
-
-		public Integer[] numArgs() {
-			return new Integer[]{1};
-		}
-
-		public String docs() {
-			return "array {int} Returns an array of info about the material.";
 		}
 	}
 	
