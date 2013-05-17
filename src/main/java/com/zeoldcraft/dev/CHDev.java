@@ -57,6 +57,11 @@ public class CHDev implements Plugin {
 		public CHVersion since() {
 			return CHVersion.V3_3_1;
 		}
+
+		public String getName() {
+			String cname = this.getClass().getName();
+			return cname.substring(cname.indexOf("$") + 1, cname.length());
+		}
 	}
 
 	public static abstract class DevEvent extends AbstractEvent {

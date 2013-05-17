@@ -1,6 +1,8 @@
 package com.zeoldcraft.dev.functions;
 
 import java.util.ArrayList;
+import java.util.UUID;
+
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.SimpleCommandMap;
@@ -37,6 +39,32 @@ public class DevFunctions {
 	
 	public String docs() {
 		return "Function testing for EntityManagement class.";
+	}
+	
+	@api
+	public static class entity_uuid extends DFun {
+
+		public ExceptionType[] thrown() {
+			return new ExceptionType[]{ExceptionType.BadEntityException, ExceptionType.CastException};
+		}
+
+		public Construct exec(Target t, Environment environment, Construct... args) throws ConfigRuntimeException {
+			UUID id = Static.getEntity(Static.getInt32(args[0], t), t).getUniqueId();
+			CArray ret = new CArray(t);
+			ret.set("toString", new CString(id.toString(), t), t);
+			ret.set("mostSigBits", new CInt(id.getMostSignificantBits(), t), t);
+			ret.set("leastSigBits", new CInt(id.getLeastSignificantBits(), t), t);
+			return ret;
+		}
+
+		public Integer[] numArgs() {
+			return new Integer[]{1};
+		}
+
+		public String docs() {
+			return "array {entityID} This is mainly an experimental function to teach me about UUID."
+					+ " Returns an array with keys toString, mostSigBits, leastSigBits";
+		}
 	}
 	
 	@api
