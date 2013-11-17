@@ -1,24 +1,8 @@
 package com.zeoldcraft.dev.events;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.laytonsmith.annotations.api;
-import com.laytonsmith.core.constructs.*;
-import com.laytonsmith.core.events.BindableEvent;
-import com.laytonsmith.core.exceptions.ConfigRuntimeException;
-import com.laytonsmith.core.exceptions.EventException;
-import com.laytonsmith.core.exceptions.PrefilterNonMatchException;
-import com.laytonsmith.core.functions.Exceptions.ExceptionType;
-import com.zeoldcraft.dev.CHDev.DevEvent;
-import com.zeoldcraft.dev.abstraction.events.MCChatTabCompleteEvent;
-import com.zeoldcraft.dev.abstraction.events.MCTabCompleteEvent;
-
 public class DevEvents {
 	
-	@api
+	/*@api
 	public static class tab_complete extends DevEvent {
 
 		public String getName() {
@@ -41,7 +25,7 @@ public class DevEvents {
 		}
 
 		public BindableEvent convert(CArray manualObject) {
-			throw new ConfigRuntimeException("Operation not supported", Target.UNKNOWN);
+			throw new ConfigRuntimeException("Operation not supported", ExceptionType.BindException, Target.UNKNOWN);
 		}
 
 		public Map<String, Construct> evaluate(BindableEvent e) throws EventException {
@@ -87,57 +71,5 @@ public class DevEvents {
 			}
 			return false;
 		}
-	}
-	
-	@api
-	public static class chat_tab_complete extends DevEvent {
-
-		public String getName() {
-			return "chat_tab_complete";
-		}
-
-		public String docs() {
-			// TODO Auto-generated method stub
-			return "";
-		}
-
-		public boolean matches(Map<String, Construct> prefilter, BindableEvent e)
-				throws PrefilterNonMatchException {
-			if (e instanceof MCChatTabCompleteEvent) {
-				return true;
-			}
-			return false;
-		}
-
-		public BindableEvent convert(CArray manualObject) {
-			throw new ConfigRuntimeException("Unsupported Operation", Target.UNKNOWN);
-		}
-
-		public Map<String, Construct> evaluate(BindableEvent e)
-				throws EventException {
-			if (e instanceof MCChatTabCompleteEvent) {
-				MCChatTabCompleteEvent event = (MCChatTabCompleteEvent) e;
-				Target t = Target.UNKNOWN;
-				Map<String, Construct> ret = evaluate_helper(event);
-				ret.put("message", new CString(event.getChatMessage(), t));
-				ret.put("last", new CString(event.getLastToken(), t));
-				CArray completions = new CArray(t);
-				for (String c : event.getTabCompletions()) {
-					completions.push(new CString(c, t));
-				}
-				ret.put("completions", completions);
-				return ret;
-			} else {
-				throw new EventException("Could not convert to MCTabCompleteEvent.");
-			}
-		}
-
-		public boolean modifyEvent(String key, Construct value,
-				BindableEvent event) {
-			if (event instanceof MCChatTabCompleteEvent) {
-				
-			}
-			return false;
-		}
-	}
+	}*/
 }

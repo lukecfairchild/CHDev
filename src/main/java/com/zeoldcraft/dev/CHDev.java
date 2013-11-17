@@ -2,7 +2,6 @@ package com.zeoldcraft.dev;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.List;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
@@ -11,7 +10,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.generator.ChunkGenerator;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
 import com.avaje.ebean.EbeanServer;
@@ -22,11 +20,9 @@ import com.laytonsmith.core.CHVersion;
 import com.laytonsmith.core.Static;
 import com.laytonsmith.core.events.AbstractEvent;
 import com.laytonsmith.core.events.Driver;
-import com.laytonsmith.core.events.EventUtils;
 import com.laytonsmith.core.functions.AbstractFunction;
-import com.zeoldcraft.dev.abstraction.events.bukkit.BukkitDevEvents.BukkitMCTabCompleteEvent;
 
-public class CHDev implements Plugin {
+public class CHDev {
 	
 	private static CommandHelperPlugin chp;
 	private static DevListener dl;
@@ -75,11 +71,11 @@ public class CHDev implements Plugin {
 		}
 	}
 
-	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-		BukkitMCTabCompleteEvent event = new BukkitMCTabCompleteEvent(sender, command, alias, args);
-		EventUtils.TriggerListener(Driver.EXTENSION, "tab_complete", event);
-		return event.getCompletions();
-	}
+//	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+//		BukkitMCTabCompleteEvent event = new BukkitMCTabCompleteEvent(sender, command, alias, args);
+//		EventUtils.TriggerListener(Driver.EXTENSION, "tab_complete", event);
+//		return event.getCompletions();
+//	}
 
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		sender.sendMessage("Oops, you should not be seeing this."

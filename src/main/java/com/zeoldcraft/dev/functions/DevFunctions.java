@@ -1,6 +1,5 @@
 package com.zeoldcraft.dev.functions;
 
-import java.util.ArrayList;
 import java.util.UUID;
 
 import org.bukkit.Server;
@@ -10,7 +9,6 @@ import com.laytonsmith.abstraction.*;
 import com.laytonsmith.abstraction.blocks.MCBlockFace;
 import com.laytonsmith.abstraction.blocks.MCBlockState;
 import com.laytonsmith.abstraction.blocks.MCFallingBlock;
-import com.laytonsmith.abstraction.bukkit.BukkitMCPlugin;
 import com.laytonsmith.abstraction.bukkit.BukkitMCServer;
 import com.laytonsmith.abstraction.entities.MCEnderman;
 import com.laytonsmith.abstraction.entities.MCOcelot;
@@ -26,14 +24,8 @@ import com.laytonsmith.core.environments.Environment;
 import com.laytonsmith.core.exceptions.ConfigRuntimeException;
 import com.laytonsmith.core.functions.Exceptions;
 import com.laytonsmith.core.functions.Exceptions.ExceptionType;
-import com.zeoldcraft.dev.CHDev;
 import com.zeoldcraft.dev.CHDev.DFun;
-import com.zeoldcraft.dev.abstraction.MCCommand;
-import com.zeoldcraft.dev.abstraction.MCCommandMap;
-import com.zeoldcraft.dev.abstraction.MCPluginCommand;
 import com.zeoldcraft.dev.abstraction.blocks.MCSkull;
-import com.zeoldcraft.dev.abstraction.bukkit.BukkitMCCommandMap;
-import com.zeoldcraft.dev.abstraction.bukkit.BukkitMCPluginCommand;
 
 public class DevFunctions {
 	
@@ -54,6 +46,9 @@ public class DevFunctions {
 			ret.set("toString", new CString(id.toString(), t), t);
 			ret.set("mostSigBits", new CInt(id.getMostSignificantBits(), t), t);
 			ret.set("leastSigBits", new CInt(id.getLeastSignificantBits(), t), t);
+			ret.set("variant", new CInt(id.variant(), t), t);
+			ret.set("version", new CInt(id.version(), t), t);
+			ret.set("hashcode", new CInt(id.hashCode(), t), t);
 			return ret;
 		}
 
@@ -323,7 +318,7 @@ public class DevFunctions {
 		}
 	}
 	
-	@api
+	/*@api
 	public static class register_command extends DFun {
 
 		public ExceptionType[] thrown() {
@@ -331,9 +326,9 @@ public class DevFunctions {
 		}
 
 		public Construct exec(Target t, Environment environment, Construct... args) throws ConfigRuntimeException {
-			MCPluginCommand cmd;
+			MCCommand cmd;
 			try {
-				cmd = BukkitMCPluginCommand.newCommand(args[0].val());
+				cmd = StaticLayer.GetConvertor().getNewCommand(args[0].val());
 				cmd.setTabCompleter(new BukkitMCPlugin(CHDev.myself));
 			} catch (Exception e) {
 				throw new ConfigRuntimeException(e.getMessage(), ExceptionType.PluginInternalException, t);
@@ -382,7 +377,7 @@ public class DevFunctions {
 		}
 	}
 	
-	@api
+	//@api
 	public static class unregister_command extends DFun {
 
 		public ExceptionType[] thrown() {
@@ -413,7 +408,7 @@ public class DevFunctions {
 		}
 	}
 	
-	@api
+	//@api
 	public static class claim_tabcompleter extends DFun {
 
 		public ExceptionType[] thrown() {
@@ -452,5 +447,5 @@ public class DevFunctions {
 		public String docs() {
 			return "void {command} Makes CommandHelper the TabCompleter for this command";
 		}
-	}
+	}*/
 }

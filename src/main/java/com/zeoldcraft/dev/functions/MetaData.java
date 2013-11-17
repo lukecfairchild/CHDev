@@ -2,7 +2,7 @@ package com.zeoldcraft.dev.functions;
 
 import java.util.List;
 
-import com.laytonsmith.PureUtilities.StringUtils;
+import com.laytonsmith.PureUtilities.Common.StringUtils;
 import com.laytonsmith.abstraction.MCMetadataValue;
 import com.laytonsmith.abstraction.MCMetadatable;
 import com.laytonsmith.core.Static;
