@@ -19,10 +19,19 @@
 		</dependency>
 		<dependency>
 			<groupId>com.sk89q</groupId>
+			<artifactId>worldedit</artifactId>
+			<version>5.5.6</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.spout</groupId>
+					<artifactId>spoutapi</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.sk89q</groupId>
 			<artifactId>worldguard</artifactId>
-			<version>5.7-SNAPSHOT</version>
-			<scope>compile</scope>
-			<type>jar</type>
+			<version>5.8.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>
