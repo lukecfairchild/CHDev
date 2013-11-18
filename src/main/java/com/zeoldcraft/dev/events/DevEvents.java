@@ -1,75 +1,90 @@
 package com.zeoldcraft.dev.events;
 
+import java.util.Map;
+
+import com.laytonsmith.PureUtilities.Version;
+import com.laytonsmith.annotations.api;
+import com.laytonsmith.core.CHVersion;
+import com.laytonsmith.core.ObjectGenerator;
+import com.laytonsmith.core.constructs.*;
+import com.laytonsmith.core.events.AbstractEvent;
+import com.laytonsmith.core.events.BindableEvent;
+import com.laytonsmith.core.events.Driver;
+import com.laytonsmith.core.exceptions.EventException;
+import com.laytonsmith.core.exceptions.PrefilterNonMatchException;
+import com.zeoldcraft.dev.abstraction.events.WGRegionChangeEvent;
+
 public class DevEvents {
 	
-	/*@api
-	public static class tab_complete extends DevEvent {
+	@api
+	public static class region_change extends AbstractEvent {
 
-		public String getName() {
-			return "tab_complete";
+		@Override
+		public BindableEvent convert(CArray arg0) {
+			throw new UnsupportedOperationException("This is not supported at this time.");
 		}
 
+		@Override
 		public String docs() {
-			// TODO Auto-generated method stub
 			return "{}"
-					+ " Fires for any command owned by whatever is firing the CH event"
+					+ " Fires when a player moves to a block with a different region set than they are currently in."
+					+ " {player | from: locationArray | to: locationArray | fromRegions: array of regions at the block"
+					+ " they are coming from | toRegions: array of regions at the block they are moving to}"
 					+ " {}"
 					+ " {}";
 		}
 
-		public boolean matches(Map<String, Construct> prefilter, BindableEvent e) throws PrefilterNonMatchException {
-			if (e instanceof MCTabCompleteEvent) {
+		@Override
+		public Driver driver() {
+			return Driver.EXTENSION;
+		}
+
+		@Override
+		public Map<String, Construct> evaluate(BindableEvent event) throws EventException {
+			if (event instanceof WGRegionChangeEvent) {
+				Target t = Target.UNKNOWN;
+				WGRegionChangeEvent e = (WGRegionChangeEvent) event;
+				Map<String, Construct> ret = evaluate_helper(e);
+				ret.put("player", new CString(e.getPlayer().getName(), t));
+				ret.put("from", ObjectGenerator.GetGenerator().location(e.getFrom()));
+				ret.put("to", ObjectGenerator.GetGenerator().location(e.getTo()));
+				CArray fn = new CArray(t);
+				CArray tn = new CArray(t);
+				for (String id : e.getFromRegions()) {
+					fn.push(new CString(id, t));
+				}
+				for (String id : e.getToRegions()) {
+					tn.push(new CString(id, t));
+				}
+				ret.put("fromRegions", fn);
+				ret.put("toRegions", tn);
+				return ret;
+			} else {
+				throw new EventException("Not a proper region change event.");
+			}
+		}
+
+		@Override
+		public String getName() {
+			return "region_change";
+		}
+
+		@Override
+		public boolean matches(Map<String, Construct> prefilter, BindableEvent event) throws PrefilterNonMatchException {
+			if (event instanceof WGRegionChangeEvent) {
 				return true;
 			}
 			return false;
 		}
 
-		public BindableEvent convert(CArray manualObject) {
-			throw new ConfigRuntimeException("Operation not supported", ExceptionType.BindException, Target.UNKNOWN);
-		}
-
-		public Map<String, Construct> evaluate(BindableEvent e) throws EventException {
-			if (e instanceof MCTabCompleteEvent) {
-				MCTabCompleteEvent event = (MCTabCompleteEvent) e;
-				Map<String, Construct> ret = new HashMap<String, Construct>();
-				Target t = Target.UNKNOWN;
-				ret.put("macrotype", new CString("custom", t));
-				ret.put("event_type", new CString(getName(), t));
-				CArray completions = new CArray(t);
-				for (String option : event.getCompletions()) {
-					completions.push(new CString(option, t));
-				}
-				ret.put("completions", completions);
-				ret.put("sender", new CString(event.getCommandSender().getName(), t));
-				ret.put("command", new CString(event.getCommand().getName(), t));
-				CArray args = new CArray(t);
-				for (String a : event.getArguments()) {
-					args.push(new CString(a, t));
-				}
-				ret.put("args", args);
-				return ret;
-			} else {
-				throw new EventException("Could not convert to MCTabCompleteEvent");
-			}
-		}
-
+		@Override
 		public boolean modifyEvent(String key, Construct value, BindableEvent event) {
-			if (event instanceof MCTabCompleteEvent) {
-				if(key.equals("completions")) {
-					if (value instanceof CArray) {
-						List<String> comp = new ArrayList<String>();
-						for (String k : ((CArray) value).keySet()) {
-							comp.add(((CArray) value).get(k).val());
-						}
-						((MCTabCompleteEvent) event).setCompletions(comp);
-						return true;
-					} else {
-						throw new ConfigRuntimeException("Modified completions needed to be an array.",
-								ExceptionType.FormatException, Target.UNKNOWN);
-					}
-				}
-			}
 			return false;
 		}
-	}*/
+
+		@Override
+		public Version since() {
+			return CHVersion.V3_3_1;
+		}
+	}
 }
