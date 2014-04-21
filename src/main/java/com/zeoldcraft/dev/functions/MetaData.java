@@ -84,7 +84,7 @@ public class MetaData {
 			for (MCMetadataValue v : vals) {
 				CArray u = new CArray(t);
 				for (DataType d : DataType.values()) {
-					Construct c = CVoid.VOID(t);
+					Construct c = CVoid.VOID;
 					switch (d) {
 						case BOOLEAN:
 							c = new CBoolean(v.asBoolean(), t);
