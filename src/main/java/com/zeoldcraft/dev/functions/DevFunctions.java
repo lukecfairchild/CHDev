@@ -206,7 +206,7 @@ public class DevFunctions {
 					throw new Exceptions.FormatException("Not a valid color.", t);
 				}
 			}
-			return new CVoid(t);
+			return CVoid.VOID;
 		}
 
 		public String getName() {
@@ -237,7 +237,7 @@ public class DevFunctions {
 				MCSkull sk = (MCSkull) bs;
 				return new CString(sk.getSkullType() + "|" + sk.getOwner() + "|" + sk.getRotation().name(), t);
 			}
-			return new CNull(t);
+			return CNull.NULL;
 		}
 
 		public String getName() {
@@ -277,7 +277,7 @@ public class DevFunctions {
 					com.set("name", new CString(cmd.getName(), t), t);
 					Construct label;
 					if (cmd.getLabel() == null) {
-						label = new CNull(t);
+						label = CNull.NULL;
 					} else {
 						label = new CString(cmd.getLabel(), t);
 					}
@@ -285,7 +285,7 @@ public class DevFunctions {
 					com.set("description", new CString(cmd.getDescription(), t), t);
 					Construct permission;
 					if (cmd.getPermission() == null) {
-						permission = new CNull(t);
+						permission = CNull.NULL;
 					} else {
 						permission = new CString(cmd.getPermission(), t);
 					}
@@ -433,7 +433,7 @@ public class DevFunctions {
 			} catch (Exception e) {
 				throw new ConfigRuntimeException(e.getMessage(), ExceptionType.PluginInternalException, t);
 			}
-			return new CVoid(t);
+			return CVoid.VOID;
 		}
 
 		public String getName() {
