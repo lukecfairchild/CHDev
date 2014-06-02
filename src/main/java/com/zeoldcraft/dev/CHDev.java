@@ -31,8 +31,8 @@ public class CHDev {
 	@startup
 	public static void setup() {
 		chp = CommandHelperPlugin.self;
-		Static.getLogger().info("Activating jb_aero's dev extension, make sure you know how it works!");
-		dl = new DevListener(chp);
+		Static.getLogger().info( "Activating CHWorldGuard!" );
+		dl = new DevListener( chp );
 	}
 	
 	@shutdown
