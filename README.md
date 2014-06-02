@@ -1,4 +1,6 @@
-CHDev
+CHWorldGuard
 =====
 
-An extension for testing new content for CommandHelper, the abilties of this extension are subject to hopefully frequent change.
+bind( 'region_change', null, null, @event ){
+  
+}
