@@ -20,7 +20,7 @@ public class DevEvents {
 	public static class region_change extends AbstractEvent {
 
 		@Override
-		public BindableEvent convert(CArray arg0) {
+		public BindableEvent convert(CArray arg0, Target t ) {
 			throw new UnsupportedOperationException("This is not supported at this time.");
 		}
 
