@@ -1,4 +1,4 @@
-package com.zeoldcraft.dev.abstraction.events.bukkit;
+package com.zeoldcraft.chworldguard.abstraction.events.bukkit;
 
 import java.util.List;
 
@@ -12,9 +12,9 @@ import com.laytonsmith.abstraction.MCLocation;
 import com.laytonsmith.abstraction.MCPlayer;
 import com.laytonsmith.abstraction.bukkit.BukkitMCLocation;
 import com.laytonsmith.abstraction.bukkit.BukkitMCPlayer;
-import com.zeoldcraft.dev.abstraction.events.WGRegionChangeEvent;
+import com.zeoldcraft.chworldguard.abstraction.events.WGRegionChangeEvent;
 
-public class BukkitDevEvents {
+public class BukkitWorldGuardEvents {
 	
 	public static class BukkitWGRegionChangeEvent extends Event
 			implements WGRegionChangeEvent, Cancellable {

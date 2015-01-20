@@ -1,4 +1,4 @@
-package com.zeoldcraft.dev.events;
+package com.zeoldcraft.chworldguard.events;
 
 import java.util.Map;
 
@@ -12,9 +12,9 @@ import com.laytonsmith.core.events.BindableEvent;
 import com.laytonsmith.core.events.Driver;
 import com.laytonsmith.core.exceptions.EventException;
 import com.laytonsmith.core.exceptions.PrefilterNonMatchException;
-import com.zeoldcraft.dev.abstraction.events.WGRegionChangeEvent;
+import com.zeoldcraft.chworldguard.abstraction.events.WGRegionChangeEvent;
 
-public class DevEvents {
+public class WorldGuardEvents {
 	
 	@api
 	public static class region_change extends AbstractEvent {
