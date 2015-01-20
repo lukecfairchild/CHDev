@@ -1,4 +1,4 @@
-package com.zeoldcraft.dev;
+package com.zeoldcraft.chworldguard;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,11 +16,11 @@ import com.laytonsmith.core.events.EventUtils;
 import com.sk89q.worldguard.bukkit.WGBukkit;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import com.zeoldcraft.dev.abstraction.events.bukkit.BukkitDevEvents;
+import com.zeoldcraft.chworldguard.abstraction.events.bukkit.BukkitWorldGuardEvents;
 
-public class DevListener implements Listener {
+public class CHWorldGuardListener implements Listener {
 
-	public DevListener(CommandHelperPlugin chp) {
+	public CHWorldGuardListener(CommandHelperPlugin chp) {
 		chp.registerEvent(this);
 	}
 	
@@ -67,8 +67,8 @@ public class DevListener implements Listener {
 			}
 			
 			if (fire) {
-				BukkitDevEvents.BukkitWGRegionChangeEvent rgchange
-						= new BukkitDevEvents.BukkitWGRegionChangeEvent(event.getPlayer(), fromNames, toNames, from, to);
+				BukkitWorldGuardEvents.BukkitWGRegionChangeEvent rgchange
+						= new BukkitWorldGuardEvents.BukkitWGRegionChangeEvent(event.getPlayer(), fromNames, toNames, from, to);
 				EventUtils.TriggerListener(Driver.EXTENSION, "region_change", rgchange);
 				
 				if (rgchange.isCancelled()) {
