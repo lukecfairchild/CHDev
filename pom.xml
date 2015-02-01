@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.zeoldcraft</groupId>
   <artifactId>CHWorldGuard</artifactId>
-  <version>0.1.0</version>
+  <version>1.0.0</version>
   <name>CHWorldGuard</name>
   <description>Provides a region_change event.</description>
 	<build>
