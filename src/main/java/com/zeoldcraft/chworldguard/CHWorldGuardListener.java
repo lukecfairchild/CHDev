@@ -21,7 +21,7 @@ import com.zeoldcraft.chworldguard.abstraction.events.bukkit.BukkitWorldGuardEve
 public class CHWorldGuardListener implements Listener {
 
 	public CHWorldGuardListener(CommandHelperPlugin chp) {
-		chp.registerEvent(this);
+		chp.registerEvents(this);
 	}
 	
 	public void unregister() {
