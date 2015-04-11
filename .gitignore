@@ -11,3 +11,5 @@ bin/
 *.ear
 
 target/
+.idea/
+CHWorldGuard.iml

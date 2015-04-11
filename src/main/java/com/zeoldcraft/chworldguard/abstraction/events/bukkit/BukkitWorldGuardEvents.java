@@ -11,7 +11,7 @@ import org.bukkit.event.HandlerList;
 import com.laytonsmith.abstraction.MCLocation;
 import com.laytonsmith.abstraction.MCPlayer;
 import com.laytonsmith.abstraction.bukkit.BukkitMCLocation;
-import com.laytonsmith.abstraction.bukkit.BukkitMCPlayer;
+import com.laytonsmith.abstraction.bukkit.entities.BukkitMCPlayer;
 import com.zeoldcraft.chworldguard.abstraction.events.WGRegionChangeEvent;
 
 public class BukkitWorldGuardEvents {
